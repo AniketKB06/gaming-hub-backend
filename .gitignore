@@ -1,0 +1,11 @@
+target/
+!.mvn/
+!mvnw
+!mvnw.cmd
+!.idea/
+!.vscode/
+*.log
+.DS_Store
+.env
+.env.*
+!/.env.example
