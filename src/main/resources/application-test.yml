@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:tc:postgresql:16:///gaminghub_test?TC_INITSCRIPT=file:./src/test/resources/db/test-init.sql
+    username: test
+    password: test
+  flyway:
+    enabled: true
+
+app:
+  frontend-origin: http://localhost:3000

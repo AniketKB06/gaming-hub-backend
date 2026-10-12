@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/gaming_hub}
+    username: ${DB_USERNAME:gaminghub}
+    password: ${DB_PASSWORD:gaminghub}
+
+logging:
+  level:
+    root: INFO
+    com.gaminghub: DEBUG
+
+app:
+  frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3000}
