@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: gaminghub
+      POSTGRES_USER: gaminghub
+      POSTGRES_PASSWORD: gaminghub
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  app:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/gaminghub
+      DB_USERNAME: gaminghub
+      DB_PASSWORD: gaminghub
+      JWT_SECRET: change-me-super-secret-key-for-dev-only
+      GOOGLECLIENTID: demo-google-client-id
+      GOOGLECLIENTSECRET: demo-google-client-secret
+      EMAILPROVIDERAPI_KEY: demo-email-provider-key
+      EMAIL_FROM: no-reply@gaminghub.in
+      RAZORPAYKEYID: rzp_test_demo
+      RAZORPAYKEYSECRET: demo_secret
+      RAZORPAYWEBHOOKSECRET: demo_webhook_secret
+      FRONTEND_ORIGIN: http://localhost:3000
+    ports:
+      - "8080:8080"
+volumes:
+  pgdata:

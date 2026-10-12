@@ -10,5 +10,4 @@ import java.util.UUID;
 @Repository
 public interface VenueOwnerRepository extends JpaRepository<VenueOwner, UUID> {
     Optional<VenueOwner> findByUserId(UUID userId);
-    boolean existsByUserId(UUID userId);
 }

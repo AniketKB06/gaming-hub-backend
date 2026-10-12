@@ -1,10 +1,8 @@
 spring:
   application:
     name: gaming-hub-backend
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/gaming_hub}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/gaminghub}
     username: ${DB_USERNAME:gaminghub}
     password: ${DB_PASSWORD:gaminghub}
     driver-class-name: org.postgresql.Driver
@@ -13,7 +11,11 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        jdbc:
+          time_zone: Asia/Kolkata
+    open-in-view: false
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -22,71 +24,48 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLECLIENTID:}
-            client-secret: ${GOOGLECLIENTSECRET:}
+            client-id: ${GOOGLECLIENTID:demo-google-client-id}
+            client-secret: ${GOOGLECLIENTSECRET:demo-google-client-secret}
             scope:
-              - email
+              - openid
               - profile
+              - email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
-            user-name-attribute: email
+            user-name-attribute: sub
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    port: ${EMAIL_PORT:587}
+    username: ${EMAIL_USERNAME:demo@example.com}
+    password: ${EMAIL_PASSWORD:demo-password}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
 
 server:
   port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: when_authorized
-
-app:
-  frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3000}
-  email:
-    from: ${EMAIL_FROM:no-reply@gaminghub.local}
-  security:
-    jwt:
-      secret: ${JWT_SECRET:change-me-in-production-32-characters}
-      access-token-validity-ms: 900000
-      refresh-token-validity-ms: 604800000
-    otp:
-      expiry-minutes: 5
-      resend-cooldown-seconds: 60
-      max-requests-per-day: 10
-      max-attempts: 5
-    booking:
-      hold-expiry-minutes: 15
-  payment:
-    razorpay:
-      key-id: ${RAZORPAYKEYID:}
-      key-secret: ${RAZORPAYKEYSECRET:}
-      webhook-secret: ${RAZORPAYWEBHOOKSECRET:}
-      currency: INR
-      enabled: ${RAZORPAY_ENABLED:false}
-
-logging:
-  level:
-    org.springframework.security: INFO
-    org.hibernate.SQL: INFO
-    com.gaminghub: INFO
 
 springdoc:
   api-docs:
@@ -94,3 +73,34 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
+    tagsSorter: alpha
+    persistAuthorization: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-super-secret-key-for-dev-only}
+    access-token-validity-ms: 900000
+    refresh-token-validity-ms: 604800000
+  cors:
+    allowed-origins: ${FRONTEND_ORIGIN:http://localhost:3000,https://localhost:3000}
+  email:
+    provider-api-key: ${EMAILPROVIDERAPI_KEY:demo-email-key}
+    from: ${EMAIL_FROM:no-reply@gaminghub.in}
+  razorpay:
+    key-id: ${RAZORPAYKEYID:rzp_test_demo}
+    key-secret: ${RAZORPAYKEYSECRET:demo_secret}
+    webhook-secret: ${RAZORPAYWEBHOOKSECRET:demo_webhook_secret}
+    currency: INR
+  otp:
+    expiry-minutes: 5
+    resend-cooldown-seconds: 60
+    max-attempts: 5
+    max-requests: 5
+  booking:
+    temporary-hold-expiry-minutes: 10
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.hibernate.SQL: INFO
+    com.gaminghub: INFO

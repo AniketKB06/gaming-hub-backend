@@ -1,27 +1,39 @@
 # Gaming Hub Backend
 
-This repository contains the Java Spring Boot backend for the Gaming Hub platform.
+This repository contains the backend for the Gaming Hub platform, a sports facility booking and player-matching service for India.
 
-## Phase 1
-- Project setup and configuration for Java 21 / Spring Boot 3.3.x
-- PostgreSQL configuration and Flyway migrations
-- Core domain entities and sample sports seed data
-- Package structure aligned with the requested backend design
+## Features implemented in Phase 1
+- Java 21 + Spring Boot 3.3.x project setup
+- PostgreSQL + Flyway migration setup
+- User, sport, venue, venue owner, and facility core entities
+- JWT security foundation
+- Swagger/OpenAPI setup
+- Health endpoint and API skeleton
+- Initial sports seed data
 
-## Getting started
-
-1. Create a PostgreSQL database.
-2. Copy `.env.example` to `.env` and fill in the required values.
-3. Run `./mvnw spring-boot:run`.
-
-## Stack
+## Prerequisites
 - Java 21
-- Spring Boot 3.3.x
-- Spring Security
-- Spring Data JPA
-- PostgreSQL
-- Flyway
-- Springdoc OpenAPI
-- JWT
-- Google OAuth 2.0
-- Razorpay
+- Maven 3.9+
+- PostgreSQL 16+
+
+## Local setup
+1. Create a PostgreSQL database named `gaminghub`.
+2. Copy `.env.example` to `.env` and update secrets.
+3. Run:
+   ```bash
+   mvn clean package
+   java -jar target/gaming-hub-backend-0.0.1-SNAPSHOT.jar
+   ```
+4. Browse Swagger UI: `http://localhost:8080/swagger-ui.html`
+
+## Environment variables
+See `.env.example`.
+
+## Major modules to be implemented next
+- Google OAuth login
+- Email OTP auth
+- JWT refresh and logout
+- Venue search and availability
+- Booking and payment system
+- Game sessions and invitations
+- Admin analytics and reviews

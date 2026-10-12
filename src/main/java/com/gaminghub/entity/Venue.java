@@ -1,71 +1,65 @@
 package com.gaminghub.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "venues",
-    indexes = {
-        @Index(name = "idx_venues_city", columnList = "city"),
-        @Index(name = "idx_venues_owner", columnList = "owner_id"),
-        @Index(name = "idx_venues_active", columnList = "active")
-    }
-)
+@Table(name = "venues", indexes = {
+    @Index(name = "idx_venues_city", columnList = "city"),
+    @Index(name = "idx_venues_active", columnList = "active"),
+    @Index(name = "idx_venues_owner", columnList = "owner_id")
+})
 public class Venue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "UUID")
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "uuid")
     private UUID id;
 
     @NotBlank
-    @Size(max = 200)
-    @Column(name = "name", nullable = false, length = 200)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", length = 2000)
+    @Column(name = "description")
     private String description;
 
     @NotBlank
-    @Column(name = "address_line_1", nullable = false, length = 300)
-    private String addressLine1;
-
-    @Column(name = "address_line_2", length = 300)
-    private String addressLine2;
+    @Column(name = "address", nullable = false)
+    private String address;
 
     @NotBlank
-    @Column(name = "city", nullable = false, length = 120)
+    @Column(name = "city", nullable = false)
     private String city;
 
-    @NotBlank
-    @Column(name = "state", nullable = false, length = 120)
+    @Column(name = "state")
     private String state;
 
-    @Column(name = "latitude")
+    @DecimalMin("-90.0")
+    @DecimalMax("90.0")
+    @Column(name = "latitude", precision = 9, scale = 6)
     private BigDecimal latitude;
 
-    @Column(name = "longitude")
+    @DecimalMin("-180.0")
+    @DecimalMax("180.0")
+    @Column(name = "longitude", precision = 9, scale = 6)
     private BigDecimal longitude;
 
-    @Column(name = "images", length = 2000)
+    @Column(name = "images")
     private String images;
 
-    @Column(name = "amenities", length = 1000)
+    @Column(name = "amenities")
     private String amenities;
 
-    @Column(name = "cancellation_policy", length = 1000)
-    private String cancellationPolicy;
-
-    @NotNull
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
@@ -73,13 +67,27 @@ public class Venue {
     @JoinColumn(name = "owner_id", nullable = false)
     private VenueOwner owner;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "venue_sports",
+        joinColumns = @JoinColumn(name = "venue_id"),
+        inverseJoinColumns = @JoinColumn(name = "sport_id")
+    )
+    private Set<Sport> sports = new HashSet<>();
+
+    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Facility> facilities = new HashSet<>();
+
+    @Column(name = "cancellation_policy")
+    private String cancellationPolicy;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     public Venue() {
     }
@@ -108,20 +116,12 @@ public class Venue {
         this.description = description;
     }
 
-    public String getAddressLine1() {
-        return addressLine1;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAddressLine1(String addressLine1) {
-        this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getCity() {
@@ -172,14 +172,6 @@ public class Venue {
         this.amenities = amenities;
     }
 
-    public String getCancellationPolicy() {
-        return cancellationPolicy;
-    }
-
-    public void setCancellationPolicy(String cancellationPolicy) {
-        this.cancellationPolicy = cancellationPolicy;
-    }
-
     public boolean isActive() {
         return active;
     }
@@ -196,19 +188,43 @@ public class Venue {
         this.owner = owner;
     }
 
-    public Instant getCreatedAt() {
+    public Set<Sport> getSports() {
+        return sports;
+    }
+
+    public void setSports(Set<Sport> sports) {
+        this.sports = sports;
+    }
+
+    public Set<Facility> getFacilities() {
+        return facilities;
+    }
+
+    public void setFacilities(Set<Facility> facilities) {
+        this.facilities = facilities;
+    }
+
+    public String getCancellationPolicy() {
+        return cancellationPolicy;
+    }
+
+    public void setCancellationPolicy(String cancellationPolicy) {
+        this.cancellationPolicy = cancellationPolicy;
+    }
+
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -7,83 +7,81 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "users",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
-        @UniqueConstraint(name = "uk_users_provider_identity", columnNames = {"provider", "provider_user_id"})
-    },
-    indexes = {
-        @Index(name = "idx_users_email", columnList = "email"),
-        @Index(name = "idx_users_role", columnList = "role"),
-        @Index(name = "idx_users_status", columnList = "status")
-    }
-)
+@Table(name = "users",
+       uniqueConstraints = {
+           @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+           @UniqueConstraint(name = "uk_users_google_id", columnNames = "google_id")
+       },
+       indexes = {
+           @Index(name = "idx_users_role", columnList = "role"),
+           @Index(name = "idx_users_status", columnList = "account_status")
+       })
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "UUID")
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "uuid")
     private UUID id;
 
     @NotBlank
     @Email
-    @Column(name = "email", nullable = false, unique = true, length = 255)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", length = 512)
+    @Column(name = "password_hash")
     private String passwordHash;
 
+    @Column(name = "google_id")
+    private String googleId;
+
     @NotBlank
-    @Size(max = 150)
-    @Column(name = "full_name", nullable = false, length = 150)
+    @Size(min = 2, max = 120)
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(name = "city", length = 120)
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
+    @Column(name = "city")
     private String city;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 30)
-    private Role role = Role.USER;
+    @Column(name = "preferred_sports")
+    private String preferredSports;
+
+    @Column(name = "skill_level")
+    private String skillLevel;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 30)
-    private UserStatus status = UserStatus.ACTIVE;
+    @Column(name = "account_status", nullable = false)
+    private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role = Role.USER;
 
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified = false;
 
-    @Column(name = "profile_image_url", length = 1024)
-    private String profileImageUrl;
-
-    @Column(name = "provider", length = 50)
-    private String provider;
-
-    @Column(name = "provider_user_id", length = 255)
-    private String providerUserId;
-
-    @Column(name = "last_login_at")
-    private Instant lastLoginAt;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     public User() {
     }
 
-    public User(String email, String fullName, String passwordHash) {
+    public User(String email, String fullName, String passwordHash, Role role) {
         this.email = email;
         this.fullName = fullName;
         this.passwordHash = passwordHash;
+        this.role = role;
     }
 
     public UUID getId() {
@@ -110,44 +108,20 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
     public String getFullName() {
         return fullName;
     }
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public UserStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
     }
 
     public String getProfileImageUrl() {
@@ -158,43 +132,67 @@ public class User {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getCity() {
+        return city;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getProviderUserId() {
-        return providerUserId;
+    public String getPreferredSports() {
+        return preferredSports;
     }
 
-    public void setProviderUserId(String providerUserId) {
-        this.providerUserId = providerUserId;
+    public void setPreferredSports(String preferredSports) {
+        this.preferredSports = preferredSports;
     }
 
-    public Instant getLastLoginAt() {
-        return lastLoginAt;
+    public String getSkillLevel() {
+        return skillLevel;
     }
 
-    public void setLastLoginAt(Instant lastLoginAt) {
-        this.lastLoginAt = lastLoginAt;
+    public void setSkillLevel(String skillLevel) {
+        this.skillLevel = skillLevel;
     }
 
-    public Instant getCreatedAt() {
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

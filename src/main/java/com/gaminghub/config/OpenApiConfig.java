@@ -15,23 +15,23 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI gamingHubOpenAPI() {
-        SecurityScheme jwtScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER)
-                .name("Authorization");
-
+        final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .info(new Info()
                         .title("Gaming Hub API")
+                        .description("Sports venue booking and player matching backend")
                         .version("1.0.0")
-                        .description("Backend APIs for sports venue booking, player matching, payments, and notifications.")
                         .contact(new Contact()
-                                .name("Gaming Hub Engineering")
-                                .email("support@gaminghub.com"))
-                        .license(new License().name("Apache 2.0")))
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                .components(new Components().addSecuritySchemes("bearerAuth", jwtScheme));
+                                .name("Gaming Hub Team")
+                                .email("support@gaminghub.in"))
+                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0")))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 }

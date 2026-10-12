@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface SportRepository extends JpaRepository<Sport, UUID> {
     Optional<Sport> findBySlug(String slug);
+
     boolean existsByNameIgnoreCase(String name);
-    boolean existsBySlugIgnoreCase(String slug);
 }

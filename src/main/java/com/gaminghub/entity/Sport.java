@@ -2,58 +2,49 @@ package com.gaminghub.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-    name = "sports",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_sports_slug", columnNames = "slug"),
-        @UniqueConstraint(name = "uk_sports_name", columnNames = "name")
-    },
-    indexes = {
-        @Index(name = "idx_sports_active", columnList = "active")
-    }
-)
+@Table(name = "sports", uniqueConstraints = @UniqueConstraint(name = "uk_sports_name", columnNames = "name"), indexes = @Index(name = "idx_sports_active", columnList = "active"))
 public class Sport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "UUID")
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "uuid")
     private UUID id;
 
     @NotBlank
-    @Column(name = "name", nullable = false, length = 120)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @NotBlank
-    @Column(name = "slug", nullable = false, length = 120)
+    @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
-    @Column(name = "description", length = 1000)
+    @Column(name = "description")
     private String description;
 
-    @NotNull
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
-    @Column(name = "sort_order")
-    private Integer sortOrder;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     public Sport() {
+    }
+
+    public Sport(String name, String slug, String description) {
+        this.name = name;
+        this.slug = slug;
+        this.description = description;
     }
 
     public UUID getId() {
@@ -96,27 +87,19 @@ public class Sport {
         this.active = active;
     }
 
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
